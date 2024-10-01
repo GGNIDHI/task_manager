@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import simpledialog, messagebox
+from tkinter import messagebox
 import time
 import threading
 
@@ -9,7 +9,7 @@ tasks = []
 def update_task_status(task, task_label, time_rem_label, edit_button):
     amber_popup_shown = False
 
-    while task['remaining_time'] > 0:
+    while task['remaining_time'] > 0 and not task['done']:
         mins, secs = divmod(task['remaining_time'], 60)
         time_rem_label.config(text=f"{int(mins)} min {int(secs)} sec")
 
@@ -33,9 +33,11 @@ def update_task_status(task, task_label, time_rem_label, edit_button):
 def show_notification(reminder_text):
     messagebox.showinfo("Reminder", f"Reminder: {reminder_text}")
 
-def mark_done(task_label, task):
+def mark_done(task_label, task, time_rem_label):
     task['done'] = True
     task_label.config(bg="green")
+    time_rem_label.config(text="Completed")  # Stop the countdown
+    # No further updates to this task since it's done
 
 def edit_task(task, task_label, time_rem_label, edit_button):
     if task.get('time_up'):
@@ -118,7 +120,7 @@ def start_timer():
         time_rem_label = tk.Label(task_frame_row, text=f"{int(minutes)} min", width=20, font=("Helvetica", 12), bg="lightgray", relief=tk.GROOVE)
         time_rem_label.pack(side="left", fill="x", padx=5)
 
-        done_button = tk.Button(task_frame_row, text="Done", command=lambda: mark_done(task_label, task))
+        done_button = tk.Button(task_frame_row, text="Done", command=lambda: mark_done(task_label, task, time_rem_label))
         done_button.pack(side="left", padx=5)
 
         edit_button = tk.Button(task_frame_row, text="Edit", command=lambda: edit_task(task, task_label, time_rem_label, edit_button))
@@ -142,7 +144,7 @@ root.title("Alarm Reminder with Task List")
 root.geometry("800x400")
 root.config(bg="#f0f8ff")
 
-header = tk.Label(root, text="Your's Favourite Task Manager ", font=("Helvetica", 16), bg="#4682B4", fg="white", padx=20, pady=10)
+header = tk.Label(root, text="Set Your Alarm Reminder", font=("Helvetica", 16), bg="#4682B4", fg="white", padx=20, pady=10)
 header.pack(fill="x")
 
 reminder_label = tk.Label(root, text="Reminder Message", font=("Helvetica", 12), bg="#f0f8ff")
